@@ -1,6 +1,6 @@
-﻿using FinanceApi.Repositories;
-using FinanceApi.Models.Entities;
+﻿using FinanceApi.Models.Entities;
 using BCrypt.Net;
+using FinanceApi.Interfaces;
 namespace FinanceApi.Services
 {
     public class UserService : IUserService
@@ -25,6 +25,43 @@ namespace FinanceApi.Services
             };
             await _userRepository.CreateUserAync(user);
             return user;
+        }
+        public async Task<User> UpdateUserAsync(Guid id, string? newEmail = null, string? newPassword = null)
+        {
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+            if (newEmail != null)
+            {
+                user.Email = newEmail;
+            }
+            if (newPassword != null)
+            {
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            }
+            await _userRepository.UpdateUserAsync(user);
+            return user;
+        }
+        public async Task DeleteUserAsync(Guid id)
+        {
+            var user = await _userRepository.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+            await _userRepository.DeleteUserAsync(user);
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await _userRepository.GetUserByEmailAsync(email);
+        }
+
+        public async Task<IEnumerable<User?>> GetAllUsersAsync()
+        {
+            return await _userRepository.GetAllUsersAsync();
         }
         public async Task<User?> GetUserByIdAsync(Guid id)
         {

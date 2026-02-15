@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FinanceApi.Data;
 using FinanceApi.Models.Entities;
+using FinanceApi.Interfaces;
 
 namespace FinanceApi.Repositories
 {

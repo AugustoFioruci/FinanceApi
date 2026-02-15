@@ -1,6 +1,6 @@
 ﻿using FinanceApi.Models.Entities;
 
-namespace FinanceApi.Repositories
+namespace FinanceApi.Interfaces
 {
     public interface IUserRepository
     {

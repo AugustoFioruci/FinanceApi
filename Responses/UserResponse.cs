@@ -1,6 +1,6 @@
 ﻿namespace FinanceApi.DTOs
 {
-    public class UserDTO
+    public class UserResponse
     {
         public Guid UserId { get; set; }
         public string Name { get; set; } = string.Empty;
