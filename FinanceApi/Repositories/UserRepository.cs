@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using FinanceApi.Data;
 using FinanceApi.Models.Entities;
-using FinanceApi.Interfaces;
+using FinanceApi.Repositories.Interfaces;
 
 namespace FinanceApi.Repositories
 {
@@ -21,7 +21,7 @@ namespace FinanceApi.Repositories
         {
             return await _context.Users.ToListAsync();
         }
-        public async Task CreateUserAync(User user)
+        public async Task CreateUserAsync(User user)
         {
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();

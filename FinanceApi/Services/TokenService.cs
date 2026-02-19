@@ -2,8 +2,8 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using FinanceApi.Interfaces;
 using FinanceApi.Models.Entities;
+using FinanceApi.Services.Interfaces;
 namespace FinanceApi.Services
 {
     public class TokenService : ITokenService
@@ -18,6 +18,7 @@ namespace FinanceApi.Services
         {
             var claims = new[]
             {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString())

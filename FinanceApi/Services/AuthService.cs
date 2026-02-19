@@ -1,17 +1,17 @@
-﻿
-using FinanceApi.Interfaces;
+﻿using FinanceApi.Repositories.Interfaces;
 using FinanceApi.Responses;
+using FinanceApi.Services.Interfaces;
 
 namespace FinanceApi.Services
 {
-    public class AuthService(IUserRepository userRepository, ITokenService tokenService) : IAuthService
+    public class AuthService(IUserService userService, ITokenService tokenService) : IAuthService
     {
-        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IUserService _userService = userService;
         private readonly ITokenService _tokenService = tokenService;
 
         public async Task<AuthResponse> LoginAsync(string email, string password)
         {
-            var user = await _userRepository.GetUserByEmailAsync(email)
+            var user = await _userService.GetUserByEmailAsync(email)
             ?? throw new Exception("Invalid email or password.");
 
             var valid = BCrypt.Net.BCrypt.Verify(password, user.PasswordHash);
@@ -25,9 +25,9 @@ namespace FinanceApi.Services
                 ExpireAt = DateTime.UtcNow.AddHours(1),
             };
         }
-        public async Task<AuthResponse> RegisterAsync(string email, string password)
+        public async Task<AuthResponse> RegisterAsync(string email, string password, string name)
         {
-            var existingUser = await _userRepository.GetUserByEmailAsync(email);
+            var existingUser = await _userService.GetUserByEmailAsync(email);
             if (existingUser != null)
             {
                 throw new Exception("Email already in use.");
@@ -38,7 +38,7 @@ namespace FinanceApi.Services
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
             };
-            await _userRepository.CreateUserAync(user);
+            await _userService.CreateUserAsync(email, password, name);
             return new AuthResponse
             {
                 AccessToken = _tokenService.GenerateToken(user),

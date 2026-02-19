@@ -10,8 +10,9 @@ namespace FinanceApi.Data.Configuration
             builder.HasKey(u => u.UserId);
             builder.Property(u => u.Name).IsRequired().HasMaxLength(100);
             builder.Property(u => u.Email).IsRequired().HasMaxLength(255);
-            builder.Property(u => u.PasswordHash).IsRequired();
+            builder.Property(u => u.PasswordHash).IsRequired().HasMaxLength(255);
             builder.Property(u => u.CreatedAt).HasDefaultValueSql("NOW()");
+            builder.Property(u => u.isActive).HasDefaultValue(true);
             builder.HasIndex(u => u.Email).IsUnique();
         }
     }

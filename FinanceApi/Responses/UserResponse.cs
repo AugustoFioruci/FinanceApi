@@ -1,4 +1,4 @@
-﻿namespace FinanceApi.DTOs
+﻿namespace FinanceApi.Responses
 {
     public class UserResponse
     {

@@ -1,4 +1,6 @@
-﻿namespace FinanceApi.Requests
+﻿using FinanceApi.Models.Enums;
+
+namespace FinanceApi.Requests
 {
     public class UserCreateRequest
     {

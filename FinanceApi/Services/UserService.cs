@@ -1,6 +1,9 @@
 ﻿using FinanceApi.Models.Entities;
 using BCrypt.Net;
-using FinanceApi.Interfaces;
+using FinanceApi.Services.Interfaces;
+using FinanceApi.Repositories.Interfaces;
+using FinanceApi.Models.Enums;
+using FinanceApi.Requests;
 namespace FinanceApi.Services
 {
     public class UserService : IUserService
@@ -10,9 +13,9 @@ namespace FinanceApi.Services
         {
             _userRepository = userRepository;
         }
-        public async Task<User> CreateUserAsync(string email, string password)
+        public async Task<User> CreateUserAsync(UserCreateRequest userCreateRequest)
         {
-            var existingUser = await _userRepository.GetUserByEmailAsync(email);
+            var existingUser = await _userRepository.GetUserByEmailAsync(userCreateRequest.Email);
             if (existingUser != null)
             {
                 throw new Exception("User with this email already exists.");
@@ -20,10 +23,14 @@ namespace FinanceApi.Services
             var user = new User
             {
                 UserId = Guid.NewGuid(),
-                Email = email,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
+                Name = userCreateRequest.Name,
+                Email = userCreateRequest.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(userCreateRequest.Password),
+                Role = UserRole.User,
+                CreatedAt = DateTime.UtcNow,
+                isActive = true
             };
-            await _userRepository.CreateUserAync(user);
+            await _userRepository.CreateUserAsync(user);
             return user;
         }
         public async Task<User> UpdateUserAsync(Guid id, string? newEmail = null, string? newPassword = null)

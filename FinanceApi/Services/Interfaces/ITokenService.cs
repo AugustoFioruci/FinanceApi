@@ -1,5 +1,5 @@
 ﻿using FinanceApi.Models.Entities;
-namespace FinanceApi.Interfaces
+namespace FinanceApi.Services.Interfaces
 {
     public interface ITokenService
     {

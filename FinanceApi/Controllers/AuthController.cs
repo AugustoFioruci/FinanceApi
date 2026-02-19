@@ -1,12 +1,12 @@
-﻿using FinanceApi.Interfaces;
-using FinanceApi.Requests;
+﻿using FinanceApi.Requests;
+using FinanceApi.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinanceApi.Controllers
 {
     [ApiController]
     [Route("auth")]
-    public class AuthController(IAuthService authService) : Controller
+    public class AuthController(IAuthService authService) : ControllerBase
     {
         private readonly IAuthService _authService = authService;
         [HttpPost("login")]

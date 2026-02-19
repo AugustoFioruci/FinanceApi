@@ -1,65 +1,57 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FinanceApi.Models.Entities;
 using FinanceApi.Requests;
-using FinanceApi.Models.Entities;
-using FinanceApi.Interfaces;
+using FinanceApi.Responses;
+using FinanceApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Authorize]
+    [Route("api/users")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+
         public UserController(IUserService userService)
         {
             _userService = userService;
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateUser([FromBody] UserCreateRequest request)
-        {
-            try
-            {
-                if (request == null || string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
-                {
-                    return BadRequest("Email and Password are required.");
-                }
-                var user = await _userService.CreateUserAsync(request.Email, request.Password);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        [HttpPatch("update/{id}")]
+        [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserUpdateRequest request)
         {
 
-
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             try
             {
                 var user = await _userService.UpdateUserAsync(id, request?.Email, request?.Password);
-                return Ok(user);
+                return Ok(new UserResponse
+                {
+                    Email = user.Email,
+                    Name = user.Name
+                });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        [HttpDelete("delete/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
             try
             {
                 await _userService.DeleteUserAsync(id);
-                return Ok("User deleted successfully.");
+                return NoContent();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("getByEmail")]
+        [HttpGet("by-email")]
         public async Task<IActionResult> GetUserByEmail([FromQuery] string email)
         {
             try
@@ -69,14 +61,19 @@ namespace FinanceApi.Controllers
                 {
                     return NotFound("User not found.");
                 }
-                return Ok(user);
+                return Ok(new UserResponse 
+                {
+                    UserId = user.UserId,
+                    Email = user.Email,
+                    Name = user.Name
+                });
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-        [HttpGet("getById/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             try
@@ -86,7 +83,12 @@ namespace FinanceApi.Controllers
                 {
                     return NotFound("User not found.");
                 }
-                return Ok(user);
+                return Ok(new UserResponse
+                {
+                    UserId = user.UserId,
+                    Email = user.Email,
+                    Name = user.Name
+                });
             }
             catch (Exception ex)
             {
@@ -94,13 +96,18 @@ namespace FinanceApi.Controllers
             }
 
         }
-        [HttpGet("getAll")]
+        [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             try
             {
                 var users = await _userService.GetAllUsersAsync();
-                return Ok(users);
+                return Ok(users.Select(u => new UserResponse
+                {
+                    UserId = u.UserId,
+                    Email = u.Email,
+                    Name = u.Name
+                }));
             }
             catch (Exception ex)
             {
