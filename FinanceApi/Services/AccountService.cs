@@ -1,4 +1,5 @@
-﻿using FinanceApi.Models.Entities;
+﻿using FinanceApi.Exceptions;
+using FinanceApi.Models.Entities;
 using FinanceApi.Repositories.Interfaces;
 using FinanceApi.Requests;
 using FinanceApi.Services.Interfaces;
@@ -18,7 +19,7 @@ namespace FinanceApi.Services
             var account = await _accountRepository.GetAccountByIdAsync(accountId);
             if (account == null || account.UserId != userId)
             {
-                return null;
+                throw new AccountNotFoundException("Account Not Found");
             }
             return account;
         }
@@ -28,7 +29,7 @@ namespace FinanceApi.Services
             var existingAccount = await _accountRepository.GetAccountByNameAsync(accountCreateRequest.Name, userId);
             if (existingAccount != null)
             {
-                return null;// Account with the same ID already exists for this user
+                throw new DuplicateAccountNameException(accountCreateRequest.Name);
             }
             var account = new Account
             {
@@ -46,7 +47,7 @@ namespace FinanceApi.Services
             var existingAccount = await _accountRepository.GetAccountByNameAsync(accountUpdateRequest.Name, userId);
             if (existingAccount == null)
             {
-                return null;// Account not found or does not belong to the user
+                throw new DuplicateAccountNameException(accountUpdateRequest.Name);
             }
             existingAccount.Name = accountUpdateRequest.Name;
             await _accountRepository.UpdateAccountAsync(existingAccount);
@@ -57,17 +58,16 @@ namespace FinanceApi.Services
             var existingAccount = await GetByIdAsync(accountId, userId);
             if (existingAccount == null)
             {
-                return;// Account not found or does not belong to the user
+                throw new AccountNotFoundException();
             }
             await _accountRepository.DeleteAccountAsync(existingAccount);
-            return;
         }
         public async Task<Account> DepositAccountAsync(Guid accountId, decimal amount, Guid userId)
         {
             var account = await GetByIdAsync(accountId, userId);
             if (account == null)
             {
-                return null;// Account not found or does not belong to the user
+                throw new AccountNotFoundException("Account Not Found");
             }
             account.Balance += amount;
             await _accountRepository.UpdateAccountAsync(account);
@@ -78,11 +78,11 @@ namespace FinanceApi.Services
             var account = await GetByIdAsync(accountId, userId);
             if (account == null)
             {
-                return null;// Account not found or does not belong to the user
+                throw new AccountNotFoundException("Account Not Found");
             }
             if (account.Balance < amount)
             {
-                throw new Exception("Insufficient funds.");
+                throw new InsufficientFundsException();
             }
             account.Balance -= amount;
             await _accountRepository.UpdateAccountAsync(account);

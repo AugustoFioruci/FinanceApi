@@ -63,7 +63,7 @@ namespace FinanceApi.Controllers
 
             return NoContent();
         }
-        [HttpPost]
+        [HttpPost("{accountId}/deposit")]
         public async Task<IActionResult> Deposit(Guid accountId, decimal newBalance)
         {
             var userId = User.GetUserId();
@@ -74,7 +74,7 @@ namespace FinanceApi.Controllers
             }
             return Ok(updatedAccount);
         }
-        [HttpPost]
+        [HttpPost("{accountId}/withdraw")]
         public async Task<IActionResult> Withdraw(Guid accountId, decimal newBalance)
         {
             var userId = User.GetUserId();

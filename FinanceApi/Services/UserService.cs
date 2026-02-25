@@ -4,6 +4,7 @@ using FinanceApi.Services.Interfaces;
 using FinanceApi.Repositories.Interfaces;
 using FinanceApi.Models.Enums;
 using FinanceApi.Requests;
+using FinanceApi.Exceptions;
 namespace FinanceApi.Services
 {
     public class UserService : IUserService
@@ -18,7 +19,7 @@ namespace FinanceApi.Services
             var existingUser = await _userRepository.GetUserByEmailAsync(userCreateRequest.Email);
             if (existingUser != null)
             {
-                throw new Exception("User with this email already exists.");
+                throw new DuplicateEmailException();
             }
             var user = new User
             {
@@ -38,7 +39,7 @@ namespace FinanceApi.Services
             var user = await _userRepository.GetUserByIdAsync(id);
             if (user == null)
             {
-                throw new Exception("User not found.");
+                throw new AccountNotFoundException("User Not Found");
             }
             if (newEmail != null)
             {
@@ -56,7 +57,8 @@ namespace FinanceApi.Services
             var user = await _userRepository.GetUserByIdAsync(id);
             if (user == null)
             {
-                throw new Exception("User not found.");
+                throw new AccountNotFoundException("User Not Found");
+
             }
             await _userRepository.DeleteUserAsync(user);
         }

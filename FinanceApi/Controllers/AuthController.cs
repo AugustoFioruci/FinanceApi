@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FinanceApi.Controllers
 {
     [ApiController]
-    [Route("auth")]
+    [Route("api/auth")]
     public class AuthController(IAuthService authService) : ControllerBase
     {
         private readonly IAuthService _authService = authService;
@@ -23,11 +23,21 @@ namespace FinanceApi.Controllers
             }
         }
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
             try
             {
-                var response = await _authService.RegisterAsync(request.Email, request.Password);
+                var response = await _authService.RegisterAsync(new UserCreateRequest
+                {
+                    Email = registerRequest.Email,
+                    Password = registerRequest.Password,
+                    Name = registerRequest.UserName
+                },
+                new AccountCreateRequest
+                {
+                    Name = registerRequest.AccountName,
+                    InicialBalance = registerRequest.InicialBalance
+                });
                 return Ok(response);
             }
             catch (Exception ex)
