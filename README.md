@@ -64,7 +64,7 @@ cd nome-do-projeto
 dotnet restore
 dotnet ef database update
 dotnet run
-
+```
 ## 📖 Documentação da API
 
 Após executar o projeto, acesse:
