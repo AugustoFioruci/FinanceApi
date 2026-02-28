@@ -17,13 +17,13 @@ builder.Services.AddControllers();
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAccountRepository, AccountRepository>();  // ← adicionado
+builder.Services.AddScoped<IAccountRepository, AccountRepository>(); 
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAccountService, AccountService>();  // ← adicionado
+builder.Services.AddScoped<IAccountService, AccountService>(); 
 
 // EF Core + PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero
         };
 
-        // ← LOGGING DETALHADO AQUI (adicione isso inteiro)
+        // ← LOGGING DETALHADO
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
@@ -91,33 +91,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             }
         };
 
-        // Temporário: ajuda a ver se o token chega malformado
         options.IncludeErrorDetails = true;
     });
 
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//            ValidAudience = builder.Configuration["Jwt:Audience"],
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-//            ClockSkew = TimeSpan.Zero  // mais seguro
-//        };
-//    });
 
 builder.Services.AddAuthorization();
 
-// Global Exception Handler (você terminou as exceptions, então ativa aqui)
+// Global Exception Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-// CORS (opcional, mas útil para testes com frontend ou outros clientes)
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -126,7 +110,7 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader());
 });
 
-// Swagger (deixo exatamente como você mandou, sem mudar NADA)
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -161,12 +145,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");  // ← se quiser usar
+app.UseCors("AllowAll"); 
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseExceptionHandler();  // ← ativa o handler global que você fez
+app.UseExceptionHandler(); 
 
 app.MapControllers();
 
